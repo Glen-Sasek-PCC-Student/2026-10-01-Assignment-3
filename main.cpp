@@ -23,7 +23,7 @@ int main()
   const double youthFareAmount = 5.55;
   const double bicycleFareAmount = 4.00;
 
-  char ridingVehicle;
+  char ridingVehicle_y_n;
   long long adults;
   long long seniors;
   long long youths;
@@ -41,48 +41,58 @@ int main()
   cout << left << setw(59) << LABEL_BICYCLE << VALUE_BICYCLE_FARE << endl;
   cout << endl
        << PROMPT_VEHICLE;
-  cin >> ridingVehicle;
-  ridingVehicle = static_cast<char>(toupper(static_cast<unsigned char>(ridingVehicle)));
+  cin >> ridingVehicle_y_n;
 
-  if (ridingVehicle != 'Y' && ridingVehicle != 'N')
-  {
-    cout << ERROR_INVALID_ANSWER << endl;
-    cout << MESSAGE_GOODBYE << endl;
-    return 0;
-  }
-
-  cout << endl;
-  cout << PROMPT_ADULTS;
-  if (!(cin >> adults) || adults < 0)
-  {
-    cout << ERROR_INVALID_ANSWER << endl;
-    cout << MESSAGE_GOODBYE << endl;
-    return 0;
-  }
-  cout << PROMPT_SENIORS;
-  if (!(cin >> seniors) || seniors < 0)
-  {
-    cout << ERROR_INVALID_ANSWER << endl;
-    cout << MESSAGE_GOODBYE << endl;
-    return 0;
-  }
-  cout << PROMPT_YOUTHS;
-  if (!(cin >> youths) || youths < 0)
-  {
-    cout << ERROR_INVALID_ANSWER << endl;
-    cout << MESSAGE_GOODBYE << endl;
-    return 0;
+  bool vehicle = false;
+  bool valid = true;
+  
+  switch(ridingVehicle_y_n) {
+    case 'Y': // fallthrough
+    case 'y': 
+      vehicle = true;
+      break;
+    case 'N': // fallthrough
+    case 'n': 
+      vehicle = false;
+      break;      
+    default:
+      valid = false;
   }
 
-  if (ridingVehicle == 'N')
+  if (valid)
   {
-    cout << PROMPT_BIKES;
-    if (!(cin >> bikes) || bikes < 0)
-    {
-    cout << ERROR_INVALID_ANSWER << endl;
-    cout << MESSAGE_GOODBYE << endl;
-    return 0;
+    cout << endl;
+    cout << PROMPT_ADULTS;
+    valid = (cin >> adults) && adults >= 0;
+  }
+
+  if (valid)
+  {
+    cout << endl;
+    cout << PROMPT_SENIORS;
+    valid = (cin >> seniors) && seniors >= 0;
+  }  
+
+  if (valid)
+  {
+    cout << endl;
+    cout << PROMPT_YOUTHS;
+    valid = (cin >> youths) && youths >= 0;
+  } 
+
+  if (valid)
+  {
+    if(!vehicle) {
+      cout << PROMPT_BIKES;
+      valid = (cin >> bikes) && bikes >= 0;
     }
+  }   
+
+  if (!valid)
+  {
+    cout << ERROR_INVALID_ANSWER << endl;
+    cout << MESSAGE_GOODBYE << endl;
+    return 0;
   }
 
   if (adults > numeric_limits<long long>::max() - seniors ||
@@ -105,7 +115,7 @@ int main()
   }
 
   double total = adults * adultFareAmount + seniors * seniorFareAmount + youths * youthFareAmount;
-  if (ridingVehicle == 'Y')
+  if (vehicle)
   {
     total += vehicleFareAmount;
   }
